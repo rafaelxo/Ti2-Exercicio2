@@ -46,9 +46,10 @@ public class Principal {
 		
 	// Inserir um novo usuário ao sistema
 	private static void inserirUsuario(DAO dao) {
-		System.out.print("Informe o login, a senha e o sexo do novo usuario: ");
 		sc.nextLine();
-		String log = sc.nextLine(); String sen = sc.nextLine(); char sex = sc.next().charAt(0);
+		System.out.print("Informe o novo login: "); String log = sc.nextLine();
+	    System.out.print("Informe a nova senha: "); String sen = sc.nextLine();
+	    System.out.print("Informe o novo sexo (M/F): "); char sex = sc.next().charAt(0);
 		Usuario[] usuarios = dao.getUsuarios();
 	    int cod = (usuarios != null && usuarios.length > 0) ? usuarios[usuarios.length - 1].getCodigo() + 1 : 1;
 	    Usuario novo = new Usuario(cod, log, sen, sex);
@@ -60,10 +61,25 @@ public class Principal {
 		System.out.println("Informe o codigo do usuario que deseja alterar: ");
 		int cod = sc.nextInt();
 		sc.nextLine();
-	    System.out.print("Informe o novo login, senha e sexo (M/F): ");
-	    String log = sc.nextLine(); String sen = sc.nextLine(); char sex = sc.next().charAt(0);
-	    Usuario u = new Usuario(cod, log, sen, sex);
-	    if (dao.atualizarUsuario(u)) System.out.println("Usuário atualizado com sucesso!");
+		Usuario[] usuarios = dao.getUsuarios();
+		boolean encontrado = false;
+		if (usuarios != null) {
+			for (Usuario u : usuarios) {
+				if (u.getCodigo() == cod) {
+					encontrado = true;
+					break;
+				}
+			}
+		}
+		if (!encontrado) {
+			System.out.println("Usuário de código " + cod + " não encontrado!");
+			return;
+		}
+		System.out.print("Informe o novo login: "); String log = sc.nextLine();
+	    System.out.print("Informe a nova senha: "); String sen = sc.nextLine();
+	    System.out.print("Informe o novo sexo (M/F): "); char sex = sc.next().charAt(0);
+	    Usuario alt = new Usuario(cod, log, sen, sex);
+	    if (dao.atualizarUsuario(alt)) System.out.println("Usuário atualizado com sucesso!");
 	}
 			
 	// Excluir usuário informado
@@ -71,6 +87,21 @@ public class Principal {
 		System.out.print("Informe o codigo do usuario que deseja excluir: ");
 		int cod = sc.nextInt();
 		sc.nextLine();
+		Usuario[] usuarios = dao.getUsuarios();
+		boolean encontrado = false;
+
+		if (usuarios != null) {
+			for (Usuario u : usuarios) {
+				if (u.getCodigo() == cod) {
+					encontrado = true;
+					break;
+				}
+			}
+		}
+		if (!encontrado) {
+			System.out.println("❌ Usuário com código " + cod + " não encontrado!");
+			return;
+		}
 		if (dao.excluirUsuario(cod)) System.out.println("Usuário excluído com sucesso!");
 	}
 }
